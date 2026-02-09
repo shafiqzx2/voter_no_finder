@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ভোটার তথ্য অনুসন্ধান</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    html, body { font-family: "Noto Sans Bengali", system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+
+    /* Theme tokens */
+    :root{
+      --bg0:#f6f8fb;
+      --card:#ffffff;
+      --stroke:rgba(15,23,42,.10);
+      --text:#0f172a;
+      --muted:rgba(15,23,42,.62);
+      --shadow: 0 18px 60px rgba(2,6,23,.10);
+      --brand:#10b981;
+      --brand2:#3b82f6;
+      --chip:rgba(16,185,129,.10);
+      --chipStroke:rgba(16,185,129,.20);
+      --chipText:#065f46;
+      --hint:rgba(16,185,129,.10);
+    }
+    [data-theme="dark"]{
+      --bg0:#070a12;
+      --card:rgba(255,255,255,.06);
+      --stroke:rgba(255,255,255,.10);
+      --text:rgba(255,255,255,.95);
+      --muted:rgba(255,255,255,.62);
+      --shadow: 0 18px 70px rgba(0,0,0,.45);
+      --brand:#10b981;
+      --brand2:#60a5fa;
+      --chip:rgba(16,185,129,.16);
+      --chipStroke:rgba(16,185,129,.22);
+      --chipText:rgba(209,250,229,.92);
+      --hint:rgba(16,185,129,.14);
+    }
+
+    body{
+      background:
+        radial-gradient(900px 500px at 15% 0%, rgba(16,185,129,.18), transparent 55%),
+        radial-gradient(900px 500px at 85% 5%, rgba(59,130,246,.16), transparent 60%),
+        var(--bg0);
+      color: var(--text);
+    }
+    .card{
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      border-radius: 24px;
+    }
+    .soft{
+      box-shadow: 0 12px 40px rgba(2,6,23,.12);
+    }
+    [data-theme="dark"] .soft{ box-shadow: 0 22px 70px rgba(0,0,0,.55); }
+
+    .inp{
+      background: rgba(255,255,255,.55);
+      border: 1px solid var(--stroke);
+      border-radius: 16px;
+      padding: 12px 14px;
+      width: 100%;
+      outline: none;
+      color: var(--text);
+    }
+    [data-theme="dark"] .inp{ background: rgba(0,0,0,.25); }
+    .inp:focus{ border-color: rgba(16,185,129,.55); box-shadow: 0 0 0 3px rgba(16,185,129,.15); }
+
+    .btn{
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-weight: 800;
+    }
+    .btnPrimary{
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      color: white;
+      box-shadow: 0 18px 45px rgba(16,185,129,.18);
+    }
+    .btnGhost{
+      background: rgba(255,255,255,.55);
+      border: 1px solid var(--stroke);
+    }
+    [data-theme="dark"] .btnGhost{ background: rgba(255,255,255,.06); }
+
+    .chip{
+      display:inline-flex; align-items:center; gap:6px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: var(--chip);
+      border: 1px solid var(--chipStroke);
+      color: var(--chipText);
+      font-weight: 800;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .noScrollBar::-webkit-scrollbar{ display:none; }
+    .noScrollBar{ -ms-overflow-style:none; scrollbar-width:none; }
+  </style>
+</head>
+
+<body data-theme="light">
+  <div class="mx-auto max-w-md px-4 py-5 pb-24">
+
+    <!-- HERO -->
+    <div class="card overflow-hidden">
+      <!-- Cover (আপনি আপনার image link বসাবেন) -->
+      <div class="relative h-40">
+        <img id="coverImg"
+             src="cover.png"
+             alt="cover"
+             class="h-full w-full object-cover"
+             onerror="this.style.display='none'; document.getElementById('coverFallback').style.display='block';" />
+        <div id="coverFallback" style="display:none" class="h-full w-full bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900"></div>
+
+        <!-- overlay -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-black/10"></div>
+
+        <!-- logo (আপনি আপনার logo url বসাবেন) -->
+        <div class="absolute left-4 top-4 flex items-center gap-3">
+          <div class="h-12 w-12 rounded-2xl bg-white/15 border border-white/20 overflow-hidden backdrop-blur">
+            <img id="logoImg"
+                 src="logo.jpg"
+                 alt="logo"
+                 class="h-full w-full object-cover"
+                 onerror="this.style.display='none';" />
+          </div>
+          <div class="text-white">
+            <div class="text-xl font-extrabold leading-tight">ভোটার তথ্য অনুসন্ধান</div>
+            <div class="text-xs text-white/80 font-semibold">আপনার ভোটার তথ্য খুঁজে বের করুন</div>
+          </div>
+        </div>
+
+        <!-- theme toggle -->
+        <button id="themeBtn"
+                class="absolute right-4 top-4 rounded-2xl px-3 py-2 text-sm font-extrabold text-white bg-white/15 border border-white/20 backdrop-blur">
+          🌙 / ☀️
+        </button>
+      </div>
+
+      <!-- Notice (top) -->
+      <div id="topNotice" class="px-4 py-3 border-t border-[color:var(--stroke)] text-sm font-semibold"
+           style="background: var(--hint);">
+        স্বাগতম! সার্চ করতে নাম/ভোটার নং/DOB ব্যবহার করুন।
+      </div>
+
+      <!-- Connect -->
+      <div class="px-4 py-4">
+        <div class="text-lg font-extrabold">Connect With Shafiqul</div>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <a id="fbBtn" class="btn btnGhost text-sm font-extrabold" href="#" target="_blank" rel="noreferrer">Facebook</a>
+          <a id="liBtn" class="btn btnGhost text-sm font-extrabold" href="#" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a id="pfBtn" class="btn btnGhost text-sm font-extrabold" href="#" target="_blank" rel="noreferrer">Portfolio</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGIN -->
+    <section id="loginView" class="mt-4">
+      <div class="card p-4">
+        <div class="text-base font-extrabold">লগইন করুন</div>
+        <div class="mt-1 text-xs" style="color:var(--muted)">ওয়ার্ড, আইডি, নাম ও পাসওয়ার্ড দিন</div>
+
+        <form id="loginForm" class="mt-4 grid gap-3">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs font-extrabold" style="color:var(--muted)">ওয়ার্ড</label>
+              <select id="loginWard" class="inp mt-1">
+                <option value="1">ওয়ার্ড ১</option>
+                <option value="2">ওয়ার্ড ২</option>
+                <option value="3">ওয়ার্ড ৩</option>
+                <option value="4">ওয়ার্ড ৪</option>
+                <option value="5">ওয়ার্ড ৫</option>
+                <option value="6" selected>ওয়ার্ড ৬</option>
+                <option value="7">ওয়ার্ড ৭</option>
+                <option value="8">ওয়ার্ড ৮</option>
+                <option value="9">ওয়ার্ড ৯</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-extrabold" style="color:var(--muted)">আইডি</label>
+              <input id="loginId" class="inp mt-1" placeholder="101" />
+            </div>
+          </div>
+
+          <div>
+            <label class="text-xs font-extrabold" style="color:var(--muted)">নাম</label>
+            <input id="loginName" class="inp mt-1" placeholder="Admin" />
+          </div>
+
+          <div>
+            <label class="text-xs font-extrabold" style="color:var(--muted)">পাসওয়ার্ড</label>
+            <input id="loginPass" type="password" class="inp mt-1" placeholder="password" />
+          </div>
+
+          <button id="loginBtn" type="submit" class="btn btnPrimary">
+            প্রবেশ করুন
+          </button>
+
+          <div id="loginMsg" class="hidden rounded-2xl px-4 py-3 text-sm font-extrabold"
+               style="background: rgba(244,63,94,.10); border:1px solid rgba(244,63,94,.20); color: rgba(190,18,60,.95);">
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- APP -->
+    <section id="appView" class="mt-4 hidden">
+      <div class="card p-4">
+        <div class="flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <div class="text-sm font-extrabold">স্বাগতম, <span id="meName">-</span></div>
+            <div class="text-xs mt-1" style="color:var(--muted)">
+              আইডি: <span id="meId">-</span>
+              <span class="mx-1">•</span>
+              ওয়ার্ড: <span id="meWard">-</span>
+            </div>
+            <div class="text-xs mt-1" style="color:var(--muted)">
+              ভোট কেন্দ্র: <span id="meCenter" class="font-extrabold">-</span>
+            </div>
+          </div>
+          <button id="logoutBtn" class="btn btnGhost text-sm font-extrabold">লগআউট</button>
+        </div>
+
+        <div class="mt-4 grid gap-3">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs font-extrabold" style="color:var(--muted)">ওয়ার্ড</label>
+              <select id="wardSelect" class="inp mt-1"></select>
+            </div>
+            <div>
+              <label class="text-xs font-extrabold" style="color:var(--muted)">লিঙ্গ</label>
+              <select id="genderSelect" class="inp mt-1">
+                <option value="ALL">সব</option>
+                <option value="M">পুরুষ</option>
+                <option value="F">নারী</option>
+              </select>
+            </div>
+          </div>
+
+          <button id="loadBtn" class="btn btnPrimary">ডাটা লোড করুন</button>
+
+          <!-- Search 1 -->
+          <div>
+            <label class="text-xs font-extrabold" style="color:var(--muted)">সার্চ অপশন ১</label>
+            <input id="q1" autocomplete="off" class="inp mt-1"
+                   placeholder="নাম / ভোটার নং / DOB / পিতা / মাতা / ঠিকানা" />
+            <div id="sug1" class="hidden mt-2 rounded-2xl border border-[color:var(--stroke)] p-2 max-h-44 overflow-auto noScrollBar"
+                 style="background: rgba(255,255,255,.65);"></div>
+          </div>
+
+          <!-- Search 2 -->
+          <div>
+            <label class="text-xs font-extrabold" style="color:var(--muted)">সার্চ অপশন ২</label>
+            <input id="q2" autocomplete="off" class="inp mt-1"
+                   placeholder="আরও ফিল্টার (ফলাফলের মধ্যে আবার ফিল্টার)" />
+            <div id="sug2" class="hidden mt-2 rounded-2xl border border-[color:var(--stroke)] p-2 max-h-44 overflow-auto noScrollBar"
+                 style="background: rgba(255,255,255,.65);"></div>
+          </div>
+
+          <div id="underNotice" class="rounded-2xl px-4 py-3 text-sm font-semibold"
+               style="background: var(--hint); border:1px solid rgba(16,185,129,.18); color: var(--muted);">
+            টিপস: DOB 24/09/1966 বা ২৪/০৯/১৯৬৬-দুটোই কাজ করবে।
+          </div>
+
+          <div class="rounded-2xl px-4 py-3 text-sm font-extrabold"
+               style="background: rgba(16,185,129,.10); border:1px solid rgba(16,185,129,.18); color: var(--chipText);">
+            ফলাফল: <span id="count">0</span> জন
+            <span id="netMsg" class="ml-2 text-xs" style="color:var(--muted)"></span>
+          </div>
+        </div>
+      </div>
+
+      <div id="results" class="mt-3 space-y-3"></div>
+
+      <div id="emptyBox" class="hidden mt-3 card p-6 text-center text-sm" style="color:var(--muted)">
+        কোনো তথ্য পাওয়া যায়নি। সার্চ টেক্সট/ওয়ার্ড/লিঙ্গ ঠিক করে আবার চেষ্টা করুন।
+      </div>
+    </section>
+
+    <!-- Footer AD/Notice -->
+    <div class="fixed bottom-0 left-0 right-0 z-40">
+      <div class="mx-auto max-w-md px-4 pb-3">
+        <div id="footerAd" class="rounded-2xl px-4 py-3 text-center text-xs font-extrabold soft"
+             style="background: rgba(2,6,23,.88); color:#fff;">
+          ADS / নোটিশ: এখানে আপনার মেসেজ
+        </div>
+      </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="hidden fixed inset-0 z-50 bg-black/45 p-3 flex items-end sm:items-center sm:justify-center">
+      <div class="w-full max-w-md rounded-3xl overflow-hidden soft"
+           style="background: var(--card); border:1px solid var(--stroke);">
+        <div class="flex items-center justify-between p-4 border-b border-[color:var(--stroke)]">
+          <div class="font-extrabold">শেয়ার</div>
+          <button id="shareClose" class="btn btnGhost text-sm font-extrabold">বন্ধ</button>
+        </div>
+
+        <!-- Share Preview Card -->
+        <div class="p-4">
+          <div class="rounded-3xl overflow-hidden border border-[color:var(--stroke)]">
+            <div class="p-4" style="background: linear-gradient(135deg, rgba(16,185,129,.22), rgba(59,130,246,.18));">
+              <div class="text-sm font-extrabold">ভোটার তথ্য</div>
+              <div class="text-xs mt-1" style="color:var(--muted)">ভোট কেন্দ্র: <span id="shareCenter">-</span></div>
+            </div>
+            <div class="p-4" style="background: rgba(255,255,255,.55);">
+              <div class="flex items-center justify-between gap-2">
+                <div>
+                  <div id="shareName" class="text-base font-extrabold">-</div>
+                  <div id="shareSub" class="text-xs mt-1" style="color:var(--muted)">-</div>
+                </div>
+                <span id="shareWardChip" class="chip">ওয়ার্ড -</span>
+              </div>
+
+              <pre id="shareText" class="mt-3 whitespace-pre-wrap text-sm leading-6"
+                   style="color: var(--text);"></pre>
+
+              <div class="mt-3 pt-3 border-t border-[color:var(--stroke)] text-xs font-semibold" style="color:var(--muted)">
+                সাহায্য/আপডেট:
+                <a id="waLink" href="#" target="_blank" rel="noreferrer" class="font-extrabold underline">
+                  WhatsApp 01864779975
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div id="shareNotice" class="mt-3 rounded-2xl px-4 py-3 text-xs font-semibold"
+               style="background: rgba(16,185,129,.10); border:1px solid rgba(16,185,129,.18); color: var(--muted);">
+            শেয়ার করার আগে তথ্য মিলিয়ে নিন।
+          </div>
+
+          <div class="mt-3 grid grid-cols-3 gap-2">
+            <button id="copyBtn" class="btn btnPrimary">কপি</button>
+            <button id="pngBtn" class="btn btnGhost font-extrabold">PNG</button>
+            <button id="nativeShareBtn" class="btn btnGhost font-extrabold">শেয়ার</button>
+          </div>
+
+          <div class="mt-2 text-[11px]" style="color:var(--muted)">
+            * Back চাপলে এই শেয়ার উইন্ডো বন্ধ হবে।
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 text-center text-xs" style="color:var(--muted)">© 2026 Voter Search</div>
+  </div>
+
+<script>
+  // ========= CONFIG =========
+  const API = "https://voter.research-shafiq.workers.dev"; // আপনার worker
+  const TOKEN_KEY = "voter_token";
+  const USER_KEY  = "voter_user";
+  const THEME_KEY = "voter_theme";
+
+  // ========= STATE =========
+  let token = localStorage.getItem(TOKEN_KEY) || "";
+  let me = null;
+  let voters = [];
+  let center = "-";
+  let config = null;
+
+  // ========= DOM =========
+  const themeBtn = document.getElementById("themeBtn");
+  const topNotice = document.getElementById("topNotice");
+  const underNotice = document.getElementById("underNotice");
+  const shareNotice = document.getElementById("shareNotice");
+  const footerAd = document.getElementById("footerAd");
+
+  const fbBtn = document.getElementById("fbBtn");
+  const liBtn = document.getElementById("liBtn");
+  const pfBtn = document.getElementById("pfBtn");
+
+  const loginView = document.getElementById("loginView");
+  const appView = document.getElementById("appView");
+  const loginForm = document.getElementById("loginForm");
+  const loginMsg = document.getElementById("loginMsg");
+  const loginBtn = document.getElementById("loginBtn");
+
+  const wardSelect = document.getElementById("wardSelect");
+  const genderSelect = document.getElementById("genderSelect");
+  const loadBtn = document.getElementById("loadBtn");
+
+  const q1 = document.getElementById("q1");
+  const q2 = document.getElementById("q2");
+  const sug1 = document.getElementById("sug1");
+  const sug2 = document.getElementById("sug2");
+
+  const resultsEl = document.getElementById("results");S
+  const emptyBox = document.getElementById("emptyBox");
+  const countEl = document.getElementById("count");
+  const netMsg = document.getElementById("netMsg");
+
+  const meName = document.getElementById("meName");
+  const meId = document.getElementById("meId");
+  const meWard = document.getElementById("meWard");
+  const meCenter = document.getElementById("meCenter");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  const shareModal = document.getElementById("shareModal");
+  const shareClose = document.getElementById("shareClose");
+  const shareTextEl = document.getElementById("shareText");
+  const shareCenterEl = document.getElementById("shareCenter");
+  const shareNameEl = document.getElementById("shareName");
+  const shareSubEl = document.getElementById("shareSub");
+  const shareWardChip = document.getElementById("shareWardChip");
+  const waLink = document.getElementById("waLink");
+
+  const copyBtn = document.getElementById("copyBtn");
+  const nativeShareBtn = document.getElementById("nativeShareBtn");
+  const pngBtn = document.getElementById("pngBtn");
+
+  // ========= THEME =========
+  function setTheme(t){
+    document.body.setAttribute("data-theme", t);
+    localStorage.setItem(THEME_KEY, t);
+    // suggestion bg fix for dark
+    const sugBg = (t === "dark") ? "rgba(0,0,0,.35)" : "rgba(255,255,255,.65)";
+    sug1.style.background = sugBg;
+    sug2.style.background = sugBg;
+  }
+  themeBtn.addEventListener("click", ()=>{
+    const now = document.body.getAttribute("data-theme") || "light";
+    setTheme(now === "light" ? "dark" : "light");
+  });
+
+  // ========= TEXT NORMALIZATION (Bangla/English digits + DOB formats) =========
+  const bnToEnMap = {"০":"0","১":"1","২":"2","৩":"3","৪":"4","৫":"5","৬":"6","৭":"7","৮":"8","৯":"9"};
+  function bnToEnDigits(s){
+    return (s ?? "").toString().replace(/[০-৯]/g, d => bnToEnMap[d] || d);
+  }
+  function normalizeText(s){
+    return bnToEnDigits(s)
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g," ")
+      .replace(/-/g,"/"); // 24-09-1966 => 24/09/1966
+  }
+
+  function cleanParentName(s){
+    // remove labels like "পিতা:", "মাতা:", "স্বামী:" etc to avoid double text
+    return (s ?? "").toString()
+      .replace(/^(পিতা\/স্বামী|পিতা|মাতা|স্বামী)\s*[:：]\s*/g, "")
+      .replace(/(পিতা\/স্বামী|পিতা|মাতা|স্বামী)\s*[:：]\s*/g, "")
+      .trim();
+  }
+
+  function haystack(v){
+    const father = cleanParentName(v.father || v.fatherHusband || "");
+    const mother = cleanParentName(v.mother || "");
+    return normalizeText([
+      v.serial, v.voterNo, v.name, father, mother, v.dob, v.address, v.ward, v.gender
+    ].join(" "));
+  }
+  function includesQ(v, q){
+    const n = normalizeText(q);
+    if (!n) return true;
+    return haystack(v).includes(n);
+  }
+
+  function escapeHtml(str){
+    return (str ?? "").toString()
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  }
+
+  // ========= VIEW =========
+  function showLogin(){
+    loginView.classList.remove("hidden");
+    appView.classList.add("hidden");
+  }
+  function showApp(){
+    loginView.classList.add("hidden");
+    appView.classList.remove("hidden");
+  }
+  function setNet(text=""){
+    netMsg.textContent = text || "";
+  }
+
+  function setMeUI(){
+    meName.textContent = me?.name || "-";
+    meId.textContent = me?.id || "-";
+    meWard.textContent = me?.ward ?? "-";
+    meCenter.textContent = center || "-";
+
+    // Ward options
+    const wards = [1,2,3,4,5,6,7,8,9];
+    wardSelect.innerHTML = wards.map(w => `<option value="${w}">ওয়ার্ড ${w}</option>`).join("");
+    wardSelect.value = String(me?.ward || 6);
+
+    // Admin => open ward, staff => lock
+    if ((me?.role || "") === "admin") {
+      wardSelect.disabled = false;
+      wardSelect.classList.remove("opacity-70");
+    } else {
+      wardSelect.disabled = true;
+      wardSelect.value = String(me?.ward || 6);
+      wardSelect.classList.add("opacity-70");
+    }
+  }
+
+  // ========= CARDS =========
+  function voterCard(v){
+    const gLabel = v.gender === "M" ? "পুরুষ" : v.gender === "F" ? "নারী" : (v.gender || "-");
+    const father = cleanParentName(v.father || v.fatherHusband || "");
+    const mother = cleanParentName(v.mother || "");
+
+    return `
+      <div class="card overflow-hidden">
+        <div class="p-4 flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="text-base font-extrabold">${escapeHtml(v.name || "-")}</div>
+              <span class="chip">ওয়ার্ড ${escapeHtml(v.ward)}</span>
+              <span class="chip" style="background: rgba(59,130,246,.10); border-color: rgba(59,130,246,.20); color: var(--muted);"> ${gLabel} </span>
+            </div>
+
+            <div class="mt-2 grid gap-1 text-sm" style="color:var(--muted)">
+              <div><span class="font-extrabold" style="color:var(--text)">সিরিয়াল:</span> ${escapeHtml(v.serial)}</div>
+              <div><span class="font-extrabold" style="color:var(--text)">ভোটার নং:</span> ${escapeHtml(v.voterNo)}</div>
+              <div><span class="font-extrabold" style="color:var(--text)">পিতা/স্বামী:</span> ${escapeHtml(father)}</div>
+              <div><span class="font-extrabold" style="color:var(--text)">মাতা:</span> ${escapeHtml(mother)}</div>
+              <div><span class="font-extrabold" style="color:var(--text)">জন্ম তারিখ:</span> ${escapeHtml(v.dob)}</div>
+              <div><span class="font-extrabold" style="color:var(--text)">ঠিকানা:</span> ${escapeHtml(v.address)}</div>
+            </div>
+          </div>
+
+          <button data-share="1" data-key="${escapeHtml(v.voterNo)}"
+            class="btn btnGhost text-sm font-extrabold"
+            style="min-width:92px">
+            শেয়ার
+          </button>
+        </div>
+
+        <div class="px-4 py-3 border-t border-[color:var(--stroke)] text-xs font-semibold" style="color:var(--muted)">
+          ভোট কেন্দ্র: <span style="color:var(--text)" class="font-extrabold">${escapeHtml(center || "চরমালগাঁও উচ্চ বিদ্যালয়")}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  function render(){
+    const g = genderSelect.value;
+    const a = voters.filter(v=>{
+      if (g !== "ALL" && String(v.gender).toUpperCase() !== g) return false;
+      if (!includesQ(v, q1.value)) return false;
+      if (!includesQ(v, q2.value)) return false;
+      return true;
+    }).sort((x,y)=>(Number(x.serial||0)-Number(y.serial||0)));
+
+    countEl.textContent = a.length;
+    resultsEl.innerHTML = a.map(voterCard).join("");
+    emptyBox.classList.toggle("hidden", a.length !== 0);
+
+    resultsEl.querySelectorAll("[data-share='1']").forEach(btn=>{
+      btn.onclick = ()=>{
+        const voterNo = btn.getAttribute("data-key");
+        const v = a.find(x => String(x.voterNo) === String(voterNo));
+        if (v) openShare(v);
+      }
+    });
+  }
+
+  // ========= SUGGESTIONS =========
+  function buildSuggestionItem(v){
+    const father = cleanParentName(v.father || v.fatherHusband || "");
+    return `
+      <button class="w-full text-left px-3 py-2 rounded-xl hover:bg-black/5"
+              data-val="${escapeHtml(v.name)}">
+        <div class="text-sm font-extrabold" style="color:var(--text)">${escapeHtml(v.name)}</div>
+        <div class="text-xs mt-0.5" style="color:var(--muted)">
+          ${escapeHtml(father)} • ${escapeHtml(v.voterNo)} • ${escapeHtml(v.dob)}
+        </div>
+      </button>
+    `;
+  }
+
+  function suggestionList(inputEl, boxEl){
+    const text = inputEl.value.trim();
+    if (!text || voters.length === 0) { boxEl.classList.add("hidden"); boxEl.innerHTML=""; return; }
+
+    const n = normalizeText(text);
+    const found = [];
+    for (const v of voters) {
+      if (found.length >= 12) break;
+      const father = cleanParentName(v.father || v.fatherHusband || "");
+      const mother = cleanParentName(v.mother || "");
+      const hay = normalizeText(`${v.name} ${father} ${mother} ${v.voterNo} ${v.dob}`);
+      if (hay.includes(n)) found.push(v);
+    }
+
+    if (found.length === 0) { boxEl.classList.add("hidden"); boxEl.innerHTML=""; return; }
+
+    boxEl.innerHTML = found.map(buildSuggestionItem).join("");
+    boxEl.classList.remove("hidden");
+
+    boxEl.querySelectorAll("button").forEach(b=>{
+      b.onclick = ()=>{
+        inputEl.value = b.getAttribute("data-val") || "";
+        boxEl.classList.add("hidden");
+        render();
+      };
+    });
+  }
+
+  // ========= SHARE =========
+  function buildShareText(v){
+    const gLabel = v.gender === "M" ? "পুরুষ" : v.gender === "F" ? "নারী" : (v.gender || "-");
+    const father = cleanParentName(v.father || v.fatherHusband || "");
+    const mother = cleanParentName(v.mother || "");
+    return [
+      `ভোটার তথ্য`,
+      `ওয়ার্ড: ${v.ward} (${gLabel})`,
+      `ভোট কেন্দ্র: ${center || "-"}`,
+      `-------------------------`,
+      `ভোটার সিরিয়াল: ${v.serial}`,
+      `ভোটার নং: ${v.voterNo}`,
+      `নাম: ${v.name}`,
+      `পিতা/স্বামী: ${father}`,
+      `মাতা: ${mother}`,
+      `জন্ম তারিখ: ${v.dob}`,
+      `ঠিকানা: ${v.address}`,
+    ].join("\n");
+  }
+
+  function openShare(v){
+    // push history state so Back closes modal
+    history.pushState({ share: true }, "");
+
+    shareCenterEl.textContent = center || "-";
+    shareNameEl.textContent = v.name || "-";
+    const father = cleanParentName(v.father || v.fatherHusband || "");
+    shareSubEl.textContent = `${father} • ${v.voterNo}`;
+    shareWardChip.textContent = `ওয়ার্ড ${v.ward}`;
+    shareTextEl.textContent = buildShareText(v);
+
+    // WhatsApp link (only)
+    const wa = "01864779975";
+    waLink.href = `https://wa.me/88${wa}`;
+    shareModal.classList.remove("hidden");
+  }
+
+  function closeShare(){
+    shareModal.classList.add("hidden");
+  }
+
+  window.addEventListener("popstate", (e)=>{
+    // if share modal open, close on back
+    if (!shareModal.classList.contains("hidden")) {
+      closeShare();
+    }
+  });
+
+  async function copyShare(){
+    try{
+      await navigator.clipboard.writeText(shareTextEl.textContent);
+      alert("কপি হয়েছে ✅");
+    }catch{
+      alert("কপি করা যায়নি");
+    }
+  }
+
+  // PNG capture (simple: screenshot via html2canvas is not included)
+  // For now: copy text or native share recommended
+  pngBtn.addEventListener("click", async ()=>{
+    alert("PNG করতে চাইলে html2canvas লাগবে। এখন কপি/শেয়ার ব্যবহার করুন।");
+  });
+
+  // ========= API =========
+  async function apiConfig(){
+    try{
+      const res = await fetch(API + "/api/config");
+      const j = await res.json();
+      return j.ok ? j.config : null;
+    }catch{ return null; }
+  }
+
+  async function apiLogin(payload){
+    const res = await fetch(API + "/api/login", {
+      method:"POST",
+      headers: { "content-type":"application/json" },
+      body: JSON.stringify(payload),
+      // credentials optional (cookie for prod)
+      credentials: "include"
+    });
+    return await res.json();
+  }
+
+  async function apiLoadData({ ward, gender }){
+    const headers = token ? { "Authorization": "Bearer " + token } : {};
+    const qs = new URLSearchParams();
+    if (ward) qs.set("ward", String(ward));
+    qs.set("gender", gender || "ALL");
+    const res = await fetch(API + "/api/data?" + qs.toString(), {
+      method:"GET",
+      headers,
+      credentials: "include"
+    });
+    return await res.json();
+  }
+
+  // ========= EVENTS =========
+  loginForm.addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    loginMsg.classList.add("hidden");
+    loginBtn.disabled = true;
+    loginBtn.classList.add("opacity-80");
+    setNet("লগইন হচ্ছে...");
+
+    const payload = {
+      ward: Number(document.getElementById("loginWard").value),
+      id: document.getElementById("loginId").value.trim(),
+      name: document.getElementById("loginName").value.trim(),
+      password: document.getElementById("loginPass").value
+    };
+
+    try{
+      const data = await apiLogin(payload);
+      if (!data.ok){
+        loginMsg.textContent = data.message || "লগইন ব্যর্থ";
+        loginMsg.classList.remove("hidden");
+        setNet("");
+        return;
+      }
+
+      token = data.token || "";
+      me = data.user || null;
+
+      localStorage.setItem(TOKEN_KEY, token);
+      localStorage.setItem(USER_KEY, JSON.stringify(me));
+
+      showApp();
+      setMeUI();
+      setNet("লগইন সফল ✅");
+
+      await loadDataNow();
+
+    }catch{
+      loginMsg.textContent = "Network error";
+      loginMsg.classList.remove("hidden");
+      setNet("");
+    }finally{
+      loginBtn.disabled = false;
+      loginBtn.classList.remove("opacity-80");
+    }
+  });
+
+  async function loadDataNow(){
+    setNet("ডাটা লোড হচ্ছে...");
+    const gender = "ALL"; // always load all; local filter handles M/F fast
+    const ward = (me?.role === "admin") ? Number(wardSelect.value) : Number(me?.ward);
+
+    try{
+      const data = await apiLoadData({ ward, gender });
+      if (!data.ok){
+        setNet(data.message || "লোড ব্যর্থ");
+        voters = [];
+        center = "-";
+        render();
+        return;
+      }
+
+      voters = Array.isArray(data.voters) ? data.voters : [];
+      center = data.center || "-";
+      meCenter.textContent = center;
+
+      // Ensure fields name consistency
+      voters = voters.map(v => ({
+        ward: v.ward ?? data.ward,
+        gender: (v.gender || "").toUpperCase(),
+        serial: v.serial ?? v.voterSerial ?? v.sl ?? "",
+        voterNo: v.voterNo ?? v.voter_no ?? v.nid ?? v.voter ?? "",
+        name: v.name ?? v.voterName ?? "",
+        father: v.father ?? v.fatherHusband ?? v.father_husband ?? "",
+        mother: v.mother ?? "",
+        dob: v.dob ?? v.dateOfBirth ?? "",
+        address: v.address ?? v.addr ?? "",
+      }));
+
+      setNet("ডাটা লোড হয়েছে ✅");
+      render();
+
+    }catch{
+      setNet("Network error");
+    }
+  }
+
+  loadBtn.addEventListener("click", loadDataNow);
+
+  wardSelect.addEventListener("change", ()=>{
+    if ((me?.role || "") === "admin") loadDataNow();
+  });
+
+  genderSelect.addEventListener("change", render);
+
+  q1.addEventListener("input", ()=>{
+    suggestionList(q1, sug1);
+    render();
+  });
+
+  q2.addEventListener("input", ()=>{
+    suggestionList(q2, sug2);
+    render();
+  });
+
+  document.addEventListener("click", (e)=>{
+    if (!sug1.contains(e.target) && e.target !== q1) sug1.classList.add("hidden");
+    if (!sug2.contains(e.target) && e.target !== q2) sug2.classList.add("hidden");
+  });
+
+  logoutBtn.addEventListener("click", ()=>{
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    token = "";
+    me = null;
+    voters = [];
+    center = "-";
+    q1.value = "";
+    q2.value = "";
+    showLogin();
+    setNet("");
+  });
+
+  shareClose.addEventListener("click", ()=>{
+    closeShare();
+    // pop history state if possible
+    try { history.back(); } catch {}
+  });
+
+  copyBtn.addEventListener("click", copyShare);
+
+  nativeShareBtn.addEventListener("click", async ()=>{
+    try{
+      if (navigator.share){
+        await navigator.share({ title: "ভোটার তথ্য", text: shareTextEl.textContent });
+      } else {
+        await copyShare();
+      }
+    }catch{}
+  });
+
+  // ========= INIT =========
+  (async function init(){
+    // theme
+    const savedTheme = localStorage.getItem(THEME_KEY) || "light";
+    setTheme(savedTheme);
+
+    // load config (optional)
+    config = await apiConfig();
+    if (config?.notices?.top) topNotice.textContent = config.notices.top;
+    if (config?.notices?.underSearch) underNotice.textContent = config.notices.underSearch;
+    if (config?.notices?.share) shareNotice.textContent = config.notices.share;
+    if (config?.ads?.footer) footerAd.textContent = config.ads.footer;
+
+    // connect links
+    const fb = config?.contacts?.facebook || "https://www.facebook.com/profile.php?id=61581525467788";
+    const li = config?.contacts?.linkedin || "https://www.linkedin.com/in/shafiq-st/";
+    const pf = config?.contacts?.portfolio || "https://shafiqzx2.github.io/portfolio/";
+    fbBtn.href = fb; liBtn.href = li; pfBtn.href = pf;
+
+    // Restore session
+    if (token) {
+      try { me = JSON.parse(localStorage.getItem(USER_KEY) || "null"); } catch { me = null; }
+      if (me?.ward){
+        showApp();
+        setMeUI();
+        await loadDataNow();
+        return;
+      }
+    }
+    showLogin();
+  })();
+</script>
+</body>
+</html>
