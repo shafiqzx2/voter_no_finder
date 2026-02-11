@@ -291,7 +291,7 @@
       <div class="mx-auto max-w-md px-4 pb-3">
         <div id="footerAd" class="rounded-2xl px-4 py-3 text-center text-xs font-extrabold soft"
              style="background: rgba(2,6,23,.88); color:#fff;">
-          ADS / নোটিশ: এখানে আপনার মেসেজ
+          যোগ্য প্রার্থীকে ভোট দিন!
         </div>
       </div>
     </div>
@@ -310,7 +310,7 @@
           <div class="rounded-3xl overflow-hidden border border-[color:var(--stroke)]">
             <div class="p-4" style="background: linear-gradient(135deg, rgba(16,185,129,.22), rgba(59,130,246,.18));">
               <div class="text-sm font-extrabold">ভোটার তথ্য</div>
-              <div class="text-xs mt-1" style="color:var(--muted)">ভোট কেন্দ্র: <span id="shareCenter">-</span></div>
+              <div class="text-xs mt-1" style="color:var(--muted)">ভোট কেন্দ্র: <span id="shareCenter">"চরমালগাঁও উচ্চ বিদ্যালয়"</span></div>
             </div>
             <div class="p-4" style="background: rgba(255,255,255,.55);">
               <div class="flex items-center justify-between gap-2">
@@ -325,9 +325,9 @@
                    style="color: var(--text);"></pre>
 
               <div class="mt-3 pt-3 border-t border-[color:var(--stroke)] text-xs font-semibold" style="color:var(--muted)">
-                সাহায্য/আপডেট:
+                প্রয়োজনে যোগাযোগ করুন:
                 <a id="waLink" href="#" target="_blank" rel="noreferrer" class="font-extrabold underline">
-                  WhatsApp 01864779975
+                  (WhatsApp) 01864779975
                 </a>
               </div>
             </div>
@@ -345,7 +345,7 @@
           </div>
 
           <div class="mt-2 text-[11px]" style="color:var(--muted)">
-            * Back চাপলে এই শেয়ার উইন্ডো বন্ধ হবে।
+            * Back/বন্ধ চাপলে এই শেয়ার উইন্ডো বন্ধ হবে।
           </div>
         </div>
       </div>
@@ -356,7 +356,7 @@
 
 <script>
   // ========= CONFIG =========
-  const API = "https://voter.research-shafiq.workers.dev"; // আপনার worker
+  const API = "https://voter.research-shafiq.workers.dev"; 
   const TOKEN_KEY = "voter_token";
   const USER_KEY  = "voter_user";
   const THEME_KEY = "voter_theme";
@@ -365,7 +365,7 @@
   let token = localStorage.getItem(TOKEN_KEY) || "";
   let me = null;
   let voters = [];
-  let center = "-";
+  let center = "চরমালগাঁও উচ্চ বিদ্যালয়";
   let config = null;
 
   // ========= DOM =========
@@ -541,7 +541,7 @@
         </div>
 
         <div class="px-4 py-3 border-t border-[color:var(--stroke)] text-xs font-semibold" style="color:var(--muted)">
-          ভোট কেন্দ্র: <span style="color:var(--text)" class="font-extrabold">${escapeHtml(center || "চরমালগাঁও উচ্চ বিদ্যালয়")}</span>
+          ভোট কেন্দ্র: চরমালগাঁও উচ্চ বিদ্যালয়
         </div>
       </div>
     `;
