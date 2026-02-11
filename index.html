@@ -193,7 +193,7 @@
 
           <div>
             <label class="text-xs font-extrabold" style="color:var(--muted)">নাম</label>
-            <input id="loginName" class="inp mt-1" placeholder="Admin" />
+            <input id="loginName" class="inp mt-1" placeholder="Name" />
           </div>
 
           <div>
@@ -224,7 +224,7 @@
               ওয়ার্ড: <span id="meWard">-</span>
             </div>
             <div class="text-xs mt-1" style="color:var(--muted)">
-              ভোট কেন্দ্র: <span id="meCenter" class="font-extrabold">-</span>
+              ভোট কেন্দ্র: <span id="meCenter" class="font-extrabold">চরমালগাঁও উচ্চ বিদ্যালয়</span>
             </div>
           </div>
           <button id="logoutBtn" class="btn btnGhost text-sm font-extrabold">লগআউট</button>
@@ -619,7 +619,7 @@
     return [
       `ভোটার তথ্য`,
       `ওয়ার্ড: ${v.ward} (${gLabel})`,
-      `ভোট কেন্দ্র: ${center || "-"}`,
+      `ভোট কেন্দ্র: ${center || "চরমালগাঁও উচ্চ বিদ্যালয়"}`,
       `-------------------------`,
       `ভোটার সিরিয়াল: ${v.serial}`,
       `ভোটার নং: ${v.voterNo}`,
